@@ -1,0 +1,43 @@
+# allow for composer-based modules AND manually installed
+# composer installs on every run
+
+version: "3.7"
+
+services:
+  drupal:
+    image: drupal:10.1.6-php8.2-apache-bullseye
+    command: ./install/install.sh
+    working_dir: /opt/drupal
+    volumes:
+      - ./install:/opt/drupal/install
+      - ./modules:/var/www/html/modules/manual
+      # - ./libraries:/var/www/html/libraries
+      - ./themes:/var/www/html/themes
+      - ./settings.php:/var/www/html/sites/default/settings.php
+    networks:
+      - vhost-net
+      - localnet
+    environment:
+      VIRTUAL_HOST: dpasta.localhost
+    restart: unless-stopped
+
+  mysql:
+    image: mysql:5.7
+    volumes:
+      - dpasta-drupal-db:/var/lib/mysql
+    networks:
+      - localnet
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: drupal
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+    restart: unless-stopped
+
+volumes:
+  dpasta-drupal-db:
+
+networks:
+  vhost-net:
+    external: true
+  localnet:
