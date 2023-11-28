@@ -8,17 +8,16 @@ services:
     image: drupal:10.1.6-php8.2-apache-bullseye
     command: ./install/install.sh
     working_dir: /opt/drupal
+    ports:
+      - 80:80
     volumes:
       - ./install:/opt/drupal/install
       - ./modules:/var/www/html/modules/manual
       # - ./libraries:/var/www/html/libraries
       - ./themes:/var/www/html/themes
-      - ./settings.php:/var/www/html/sites/default/settings.php
+      # - ./settings.php:/var/www/html/sites/default/settings.php
     networks:
-      - vhost-net
       - localnet
-    environment:
-      VIRTUAL_HOST: dpasta.localhost
     restart: unless-stopped
 
   mysql:
@@ -38,6 +37,4 @@ volumes:
   dpasta-drupal-db:
 
 networks:
-  vhost-net:
-    external: true
   localnet:
